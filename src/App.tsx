@@ -6,6 +6,7 @@ import UserInfo from './components/UserInfo'
 import Catalog from './components/Catalog'
 import Finances from './components/Finances'
 import MyAssets from './components/MyAssets'
+import FarmPage from './components/FarmPage'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { PublicRoute } from './components/PublicRoute'
 
@@ -17,6 +18,11 @@ function App() {
         <Route path="/catalog" element={
           <ProtectedRoute>
             <Catalog />
+          </ProtectedRoute>
+        } />
+        <Route path="/farm/:id" element={
+          <ProtectedRoute>
+            <FarmPage />
           </ProtectedRoute>
         } />
         <Route path="/my-assets" element={

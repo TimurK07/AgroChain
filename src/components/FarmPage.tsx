@@ -1,97 +1,77 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import Header from "./Header"
-import crownImage from "../assets/crownImage.jpeg";
+import { useParams, useNavigate } from "react-router-dom";
+import { farms } from "@/data/farms";
+import Header from "./Header";
+import { Card, CardContent } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { useEffect } from "react";
 
-interface CowAsset {
+interface Cow {
   id: string;
-  breed: string;
   age: number;
-  weight: number;
   milkYield: number;
-  purchaseDate: string;
+  price: number;
   imageUrl: string;
+  breed: string;
+  weight: number;
+  lastCalvingDate: string;
+  pregnancyStatus: string;
   productivity: {
     milkFat: number;
     milkProtein: number;
     averageYield: number;
+    lactationNumber: number;
   };
   health: {
+    vaccination: string[];
+    diseases: string[];
     vetInspectionDate: string;
+  };
+  genetics: {
+    father: string;
+    mother: string;
+    pedigree: boolean;
   };
 }
 
-const mockAssets: CowAsset[] = [
-  {
-    id: "1",
-    breed: "Голштинская",
-    age: 4,
-    weight: 650,
-    milkYield: 32,
-    purchaseDate: "2025-01-15",
-    imageUrl: crownImage,
-    productivity: {
-      milkFat: 4.2,
-      milkProtein: 3.4,
-      averageYield: 9800
-    },
-    health: {
-      vetInspectionDate: "2025-03-01"
+export default function FarmPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  
+  const farm = farms.find(f => f.id === id);
+  
+  useEffect(() => {
+    if (!farm) {
+      navigate("/catalog");
     }
-  },
-  {
-    id: "2",
-    breed: "Симментальская",
-    age: 5,
-    weight: 680,
-    milkYield: 28,
-    purchaseDate: "2025-02-01",
-    imageUrl: crownImage,
-    productivity: {
-      milkFat: 4.0,
-      milkProtein: 3.5,
-      averageYield: 8500
-    },
-    health: {
-      vetInspectionDate: "2025-03-01"
-    }
-  },
-  {
-    id: "3",
-    breed: "Голштинская",
-    age: 3,
-    weight: 620,
-    milkYield: 30,
-    purchaseDate: "2025-03-10",
-    imageUrl: crownImage,
-    productivity: {
-      milkFat: 4.1,
-      milkProtein: 3.3,
-      averageYield: 9200
-    },
-    health: {
-      vetInspectionDate: "2025-03-15"
-    }
+  }, [farm, navigate]);
+  
+  if (!farm) {
+    return null;
   }
-];
 
-export default function MyAssets() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header currentPath="/my-assets" />
+      <Header currentPath={`/farm/${id}`} />
       
       <main className="max-w-7xl mx-auto px-4 pt-24 pb-12">
-        <h2 className="text-2xl font-semibold mb-8">Мои активы</h2>
-        
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">{farm.name}</h1>
+          <p className="text-gray-600">{farm.description}</p>
+          <div className="mt-4 flex gap-4">
+            <Badge variant="outline">{farm.type}</Badge>
+            <Badge variant="outline">{farm.location}</Badge>
+          </div>
+        </div>
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {mockAssets.map((cow) => (
+          {farm.cattle.map(cow => (
             <Card key={cow.id} className="overflow-hidden bg-white hover:shadow-lg transition-shadow">
               <div>
                 <img 
                   src={cow.imageUrl} 
                   alt={`Корова породы ${cow.breed}`}
-                  className="w-full h-70 object-cover"
+                  className="w-full h-72 object-cover"
                 />
               </div>
               
@@ -127,26 +107,27 @@ export default function MyAssets() {
                     </div>
                   </div>
 
+                  <Badge variant="outline" className="w-full justify-center">
+                    {cow.pregnancyStatus}
+                  </Badge>
+
                   <div className="pt-2 space-y-1 text-sm">
                     <div className="flex items-center gap-2">
                       <div className="h-2 w-2 rounded-full bg-green-500"/>
-                      <span className="text-gray-600">
-                        Последний осмотр: {new Date(cow.health.vetInspectionDate).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full bg-blue-500"/>
-                      <span className="text-gray-600">
-                        Дата покупки: {new Date(cow.purchaseDate).toLocaleDateString()}
-                      </span>
+                      <span className="text-gray-600">Последний осмотр: {new Date(cow.health.vetInspectionDate).toLocaleDateString()}</span>
                     </div>
                   </div>
 
                   <div className="pt-4 border-t">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-gray-600">Цена:</span>
+                      <span className="text-xl font-semibold">{cow.price.toLocaleString()} ₸</span>
+                    </div>
                     <Button 
                       className="w-full h-12 text-lg font-medium"
+                      variant="default"
                     >
-                      Продать
+                      Купить за {cow.price.toLocaleString()} ₸
                     </Button>
                   </div>
                 </div>
@@ -156,5 +137,5 @@ export default function MyAssets() {
         </div>
       </main>
     </div>
-  )
+  );
 }
