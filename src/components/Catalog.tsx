@@ -29,7 +29,7 @@ export default function Catalog() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Христианские хозяйства г. Павлодар</TableHead>
+                <TableHead>Крестьянские хозяйства г. Павлодар</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
